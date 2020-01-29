@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+export LC_ALL="C.UTF-8"
+
+if [[ $1 == root ]]; then
+	echo "We are root"
+	shift
+	exec "$@"
+else
 # get uid/gid
 USER_UID=`ls -nd /home/myuser | cut -f3 -d' '`
 USER_GID=`ls -nd /home/myuser | cut -f4 -d' '`
@@ -19,8 +26,8 @@ if [ ! -z "$USER_UID" -a "$USER_UID" != "$CUR_UID" ]; then
   find / -uid ${CUR_UID} -mount -exec chown ${USER_UID}.${USER_GID} {} \;
 fi
 
-echo "The number of arguments is: $#"
-echo "The args are $1"
+#echo "The number of arguments is: $#"
+#echo "The args are $1"
 
 if [[ $1 != *eclipse* ]]; then
     echo "IDF_PATH = $IDF_PATH"
@@ -32,3 +39,4 @@ export PATH="/opt/esp/tools/cmake/cmake-3.15.5/bin:/opt/esp/tools/ninja/1.9.0/:$
 # drop access to myuser and run cmd
 
 exec gosu myuser "$@"
+fi
